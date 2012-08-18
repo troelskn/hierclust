@@ -7,10 +7,10 @@ module Hierclust
     attr_reader :distances
 
     # Create a new Clusterer for the given data.
-    # 
+    #
     # Specify +separation+ to stop the clustering process once all the
     # items are at least +separation+ units apart.
-    # 
+    #
     # Specify +resolution+ to give a minimum size for clusters. Points that
     # are within this distance from each other will not be hierarchically
     # clustered, but will be put into clusters based strictly on coordinates.
@@ -35,7 +35,7 @@ module Hierclust
     end
 
     private
-    
+
     def find_cluster
       case @data.length
       when 0
@@ -50,7 +50,7 @@ module Hierclust
         [Cluster.new(nearest), *outliers]
       end
     end
-    
+
     def precluster(points)
       if @resolution.nil?
         # preclustering is only applicable given lower bound on resolution
@@ -67,13 +67,11 @@ module Hierclust
       grid_size = @resolution
       grid_clusters = Hash.new
       points.each do |point|
-        grid_x = (point.x / grid_size).floor
-        grid_y = (point.y / grid_size).floor
-        grid_clusters[grid_x] ||= Hash.new
-        grid_clusters[grid_x][grid_y] ||= Cluster.new([])
-        grid_clusters[grid_x][grid_y] << point
+        index = (0..(point.dimension_count-1)).map {|d| (point.value(d) / grid_size).floor.to_s }.join(",")
+        grid_clusters[index] ||= Cluster.new([])
+        grid_clusters[index] << point
       end
-      grid_clusters.values.map{|h| h.values}.flatten
+      grid_clusters.values
     end
   end
 end
